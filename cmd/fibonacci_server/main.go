@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
+
+	"github.com/danny-vo/fibonacci-backend/pkg/server"
 )
 
 func main() {
@@ -13,5 +16,6 @@ func main() {
 }
 
 func run() error {
+	http.ListenAndServe("localhost:8080", server.Initialize_Server().Get_Router())
 	return nil
 }
