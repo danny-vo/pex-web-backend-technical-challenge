@@ -21,6 +21,7 @@ func Initialize_Server() *Server {
 	return s
 }
 
+// Getter function for the router
 func (s *Server) Get_Router() *httprouter.Router {
 	return s.router
 }
