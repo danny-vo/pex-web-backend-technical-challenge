@@ -14,6 +14,7 @@ func Initialize_Fibonacci() *Fibonacci {
 		current:  0,
 		next:     1,
 		previous: 0,
+		rw_mutex: &sync.RWMutex{},
 	}
 }
 
