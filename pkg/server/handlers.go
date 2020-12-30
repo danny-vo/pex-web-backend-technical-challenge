@@ -38,6 +38,6 @@ func (s *Server) handle_health() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-TYpe", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status": "healthy"`))
+		w.Write([]byte(`{"status": "healthy"}`))
 	}
 }
