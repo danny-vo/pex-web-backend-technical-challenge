@@ -32,3 +32,12 @@ func (s *Server) handle_previous() http.HandlerFunc {
 		w.Write([]byte(fmt.Sprintf(`{"previous": %d}`, s.f_sequence.Get_Previous())))
 	}
 }
+
+// This function is simply a health check endpoint
+func (s *Server) handle_health() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-TYpe", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "healthy"`))
+	}
+}
