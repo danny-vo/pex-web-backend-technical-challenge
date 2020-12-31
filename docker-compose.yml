@@ -1,0 +1,9 @@
+version: "2.4"
+services:
+    web:
+        build: .
+        cpu_count: 1
+        mem_limit: 512m
+        ports:
+            - "8080:8080"
+        restart: always
