@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -55,7 +56,7 @@ func recovery_wrapper(h http.HandlerFunc) http.HandlerFunc {
 
 		defer func() {
 			if r := recover(); nil != r {
-				fmt.Errorf("Error occured: %v, recovered", r)
+				log.Printf("Error occured: %v\n, recovered", r)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
