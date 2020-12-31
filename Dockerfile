@@ -25,9 +25,9 @@ RUN make build
 
 # Second stage image only for executing
 FROM alpine:3.12
-RUN apk add bash
+RUN apk add --no-cache bash
 RUN apk add ca-certificates
-RUN apk add curl
+RUN apk add --no-cache curl
 
 # Copy executable
 COPY --from=build_base \
