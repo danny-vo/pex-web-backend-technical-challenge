@@ -18,7 +18,7 @@ func main() {
 func run() error {
 	var err error = nil
 	s := server.Initialize_Server()
-	err = http.ListenAndServe("localhost:8080", s.Get_Router())
+	err = http.ListenAndServe("0.0.0.0:8080", s.Get_Router())
 
 	return err
 }
