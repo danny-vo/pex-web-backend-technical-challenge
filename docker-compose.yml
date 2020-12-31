@@ -3,6 +3,8 @@ services:
     app:
         build: .
 
+        init: true
+
         cpu_count: 1
         cpus: 1
 
@@ -18,3 +20,5 @@ services:
             timeout: 2m
             retries: 1
             start_period: 10s
+
+        restart: "always"

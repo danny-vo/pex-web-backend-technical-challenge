@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	log.Println("Starting server...")
 	for {
 		if err := run(); nil != err {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
