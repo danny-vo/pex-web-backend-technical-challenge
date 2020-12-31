@@ -9,9 +9,11 @@ import (
 )
 
 func main() {
-	if err := run(); nil != err {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
-		os.Exit(1)
+	for {
+		if err := run(); nil != err {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			// os.Exit(1)
+		}
 	}
 }
 
