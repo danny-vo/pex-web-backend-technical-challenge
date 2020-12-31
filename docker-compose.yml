@@ -1,7 +1,26 @@
 version: "2.4"
 services:
+    redis:
+        image: redis:alpine
+        ports:
+            - "6379:6379"
+        
+        # Just a blob to test recovery
+        # command:
+        #     - /bin/sh
+        #     - -c
+        #     - |
+        #         nohup redis-server &
+        #         sleep 5
+        #         redis-cli SET fibonacci_current 5
+        #         tail -f /dev/null
+
     app:
         build: .
+        depends_on:
+            - redis
+        links:
+            - redis
 
         init: true
         command: /app/fibonacci-backend

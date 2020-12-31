@@ -23,7 +23,7 @@ func (s *Server) handle_next() http.HandlerFunc {
 		func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(fmt.Sprintf(`{"next": %d}`, s.f_sequence.Get_Next())))
+			w.Write([]byte(fmt.Sprintf(`{"next": %d}`, s.f_sequence.Get_Next(s.rdb))))
 		},
 	)
 }
