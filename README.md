@@ -1,3 +1,23 @@
+Table of Contents
+=================
+* [Challenge Description](#web-backend-technical-challenge)
+* [Using the Application](#using-the-application)
++ [Running the app](#running-the-app)
++ [Endpoints](#endpoints)
+    - [`/health` - This endpoint simply returns the status of the server with code `200`](#--health----this-endpoint-simply-returns-the-status-of-the-server-with-code--200-)
+    - [`/current` - This endpoint retrieves the current number in the Fibonacci sequence the app is currently on - the assumption is that the app will start at `0`](#--current----this-endpoint-retrieves-the-current-number-in-the-fibonacci-sequence-the-app-is-currently-on---the-assumption-is-that-the-app-will-start-at--0-)
+    - [`/next` - This endpoint retrieves the next number in the Fibonacci sequence relative to the state of the app - this **will modify the state** of the application and advance `current` to `next`](#--next----this-endpoint-retrieves-the-next-number-in-the-fibonacci-sequence-relative-to-the-state-of-the-app---this---will-modify-the-state---of-the-application-and-advance--current--to--next-)
+    - [`/previous` - This endpoint retrieves the previous number in the Fibonacci sequence relative to the state of the app - an assumption was made that this **WILL NOT modify the state** of the app and **at the starting state, `0` is `previous`**](#--previous----this-endpoint-retrieves-the-previous-number-in-the-fibonacci-sequence-relative-to-the-state-of-the-app---an-assumption-was-made-that-this---will-not-modify-the-state---of-the-app-and---at-the-starting-state---0--is--previous---)
+* [Testing Load Handling / High Throughput (TPS)](#testing-load-handling---high-throughput--tps-)
++ [Methodology](#methodology)
++ [Results](#results)
+* [Application Design](#application-design)
++ [Language / Framework](#language---framework)
++ [Technologies](#technologies)
++ [Fault Tolerance and Recovery](#fault-tolerance-and-recovery)
+    - [Software Solution](#software-solution)
+    - ["Infrastructure" Solution](#-infrastructure--solution)
+
 Web Backend Technical Challenge
 ===============================
 Please design and implement a web based API that steps through the Fibonacci sequence. 
