@@ -6,26 +6,37 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// serverInitializer -
+// Wrapper interface for 3rd party intitializations
 type serverInitializer interface {
 	NewRedisClient(opt *redis.Options) *redis.Client
 	NewRouter() *httprouter.Router
 	InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci
 }
 
+// servInitializer -
+// Wrapper struct for 3rd party intitializations, implements serverInitializer
 type servInitializer struct{}
 
+// NewRedisClient -
+// Method that wraps redis.NewClient call
 func (servInit *servInitializer) NewRedisClient(opt *redis.Options) *redis.Client {
 	return redis.NewClient(opt)
 }
 
+// InitializeFibonacci -
+// Method that wraps fibonacci.InitializeFibonacci call
 func (servInit *servInitializer) InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci {
 	return fibonacci.InitializeFibonacci(rdb)
 }
 
+// NewRouter -
+// Method that wraps httprouter.New call
 func (servInit *servInitializer) NewRouter() *httprouter.Router {
 	return httprouter.New()
 }
 
+// Singleton instance of initialization wrapper
 var servInit *servInitializer
 
 func init() {
