@@ -152,7 +152,7 @@ func TestFibonacci_GetCurrent(t *testing.T) {
 		want   uint32
 	}{
 		{
-			name: "simple",
+			name: "happy path",
 			fields: fields{
 				current:  5,
 				next:     8,
@@ -194,7 +194,7 @@ func TestFibonacci_GetNext(t *testing.T) {
 		want   uint32
 	}{
 		{
-			name: "simple",
+			name: "happy path",
 			fields: fields{
 				current:  5,
 				next:     8,
@@ -249,7 +249,7 @@ func TestFibonacci_GetPrevious(t *testing.T) {
 		want   uint32
 	}{
 		{
-			name: "simple",
+			name: "happy path",
 			fields: fields{
 				current:  5,
 				next:     8,
