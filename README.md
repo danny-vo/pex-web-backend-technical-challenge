@@ -23,6 +23,73 @@ Requirements:
 * You may use any programming language/framework of your choice.
 
 
+Using the Application
+---------------------
+### Running the app
+This app is intended to be used with Docker for ease of environment setup and management of services.
+
+To run the app using `docker-compose`, run this command in the root of the project
+```bash
+docker-compose up -d
+```
+
+To run without Docker (and forgoing redis integration), simply use the Makefile command
+```bash
+make run
+```
+
+Unit test execution is also available via
+```bash
+make test
+```
+
+### Endpoints
+There are four endpoints served by the application, at the root address and port: `http://0.0.0.0:8080`  
+
+  
+
+#### `/health` - This endpoint simply returns the status of the server with code `200`  
+
+To request it from the cli
+```bash
+curl -XGET http://0.0.0.0:8080/health
+```
+And receive
+```bash
+{"status": "healthy"}
+```
+
+#### `/current` - This endpoint retrieves the current number in the Fibonacci sequence the app is currently on - the assumption is that the app will start at `0`  
+
+To request it from the cli
+```bash
+curl -XGET http://0.0.0.0:8080/current
+```  
+And receive:
+```bash
+{"current": 0}
+```  
+
+#### `/next` - This endpoint retrieves the next number in the Fibonacci sequence relative to the state of the app - this **will modify the state** of the application and advance `current` to `next`  
+To request it from the cli
+```bash
+curl -XGET http://0.0.0.0:8080/next
+```
+And receive
+```bash
+{"next": 1}
+```
+
+### `/previous` - This endpoint retrieves the previous number in the Fibonacci sequence relative to the state of the app - an assumption was made that this **WILL NOT modify the state** of the app and **at the starting state, `0` is `previous`**  
+To request it from the cli
+```bash
+curl -XGET http://0.0.0.0:8080/previous
+```
+And receive
+```bash
+{"previous": 0}
+```  
+
 
 Testing Load Handling / High Throughput (TPS)
 ---------------------------------------------
