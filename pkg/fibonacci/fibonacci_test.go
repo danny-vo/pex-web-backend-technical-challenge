@@ -11,19 +11,19 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type mockRestoreRdb struct {
+type mockRdb struct {
 	value string
 	err   error
 }
 
-func (mrrh mockRestoreRdb) Get(ctx context.Context, key string) *redis.StringCmd {
-	return redis.NewStringResult(mrrh.value, mrrh.err)
+func (mr mockRdb) Get(ctx context.Context, key string) *redis.StringCmd {
+	return redis.NewStringResult(mr.value, mr.err)
 }
 
-func (mrrh mockRestoreRdb) Set(
+func (mr mockRdb) Set(
 	ctx context.Context, key string, value interface{}, expiration time.Duration,
 ) *redis.StatusCmd {
-	return redis.NewStatusResult(mrrh.value, mrrh.err)
+	return redis.NewStatusResult(mr.value, mr.err)
 }
 
 func Test_restoreFibonacci(t *testing.T) {
@@ -40,7 +40,7 @@ func Test_restoreFibonacci(t *testing.T) {
 		{
 			name: "happy path",
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "5",
 					err:   nil,
 				},
@@ -56,7 +56,7 @@ func Test_restoreFibonacci(t *testing.T) {
 		{
 			name: "redis get error",
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "",
 					err:   errors.New("mock error"),
 				},
@@ -67,7 +67,7 @@ func Test_restoreFibonacci(t *testing.T) {
 		{
 			name: "redis bad number",
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "five",
 					err:   nil,
 				},
@@ -102,7 +102,7 @@ func TestInitializeFibonacci(t *testing.T) {
 		{
 			name: "no restore",
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "",
 					err:   errors.New("mock error"),
 				},
@@ -117,7 +117,7 @@ func TestInitializeFibonacci(t *testing.T) {
 		{
 			name: "with restore",
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "5",
 					err:   nil,
 				},
@@ -202,7 +202,7 @@ func TestFibonacci_GetNext(t *testing.T) {
 				rwMutex:  &sync.RWMutex{},
 			},
 			args: args{
-				rdb: mockRestoreRdb{
+				rdb: mockRdb{
 					value: "",
 					err:   nil,
 				},
