@@ -86,6 +86,7 @@ func (f *Fibonacci) GetNext(rdb RedisClient) uint32 {
 	f.rwMutex.Lock()
 	defer f.rwMutex.Unlock()
 
+	oldNext := f.next
 	f.previous = f.current
 	f.current = f.next
 	f.next = f.current + f.previous
@@ -104,7 +105,7 @@ func (f *Fibonacci) GetNext(rdb RedisClient) uint32 {
 		}
 	}()
 
-	return f.next
+	return oldNext
 }
 
 // GetPrevious -
