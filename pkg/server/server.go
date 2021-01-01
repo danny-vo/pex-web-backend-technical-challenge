@@ -20,27 +20,27 @@ type servInitializer struct{}
 
 // NewRedisClient -
 // Method that wraps redis.NewClient call
-func (servInit *servInitializer) NewRedisClient(opt *redis.Options) *redis.Client {
+func (servInit servInitializer) NewRedisClient(opt *redis.Options) *redis.Client {
 	return redis.NewClient(opt)
 }
 
 // InitializeFibonacci -
 // Method that wraps fibonacci.InitializeFibonacci call
-func (servInit *servInitializer) InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci {
+func (servInit servInitializer) InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci {
 	return fibonacci.InitializeFibonacci(rdb)
 }
 
 // NewRouter -
 // Method that wraps httprouter.New call
-func (servInit *servInitializer) NewRouter() *httprouter.Router {
+func (servInit servInitializer) NewRouter() *httprouter.Router {
 	return httprouter.New()
 }
 
 // Singleton instance of initialization wrapper
-var servInit *servInitializer
+var servInit serverInitializer
 
 func init() {
-	servInit = &servInitializer{}
+	servInit = servInitializer{}
 }
 
 // Server -
