@@ -80,7 +80,7 @@ And receive
 {"next": 1}
 ```
 
-### `/previous` - This endpoint retrieves the previous number in the Fibonacci sequence relative to the state of the app - an assumption was made that this WILL NOT modify the state of the app and at the starting state, `0` is `previous`  
+#### `/previous` - This endpoint retrieves the previous number in the Fibonacci sequence relative to the state of the app - an assumption was made that this **WILL NOT modify the state** of the app and **at the starting state, `0` is `previous`**  
 To request it from the cli
 ```bash
 curl -XGET http://0.0.0.0:8080/previous
