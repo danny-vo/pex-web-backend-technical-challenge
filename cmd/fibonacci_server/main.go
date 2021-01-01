@@ -12,7 +12,6 @@ func main() {
 	for {
 		if err := run(); nil != err {
 			log.Printf("Error occured while serving: %v\n", err)
-			// os.Exit(1)
 		}
 	}
 }
@@ -20,6 +19,7 @@ func main() {
 func run() error {
 	var err error = nil
 	s := server.InitializeServer()
+
 	log.Println("Server has been initialized, now serving...")
 	err = http.ListenAndServe("0.0.0.0:8080", s.GetRouter())
 
