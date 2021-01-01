@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"io/ioutil"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -10,21 +11,21 @@ import (
 )
 
 type mockFibSequence struct {
-	current  uint32
-	next     uint32
-	previous uint32
+	current  *big.Int
+	next     *big.Int
+	previous *big.Int
 }
 
-func (mfs mockFibSequence) GetCurrent(s *Server) uint32 {
-	return mfs.current
+func (mfs mockFibSequence) GetCurrent(s *Server) string {
+	return mfs.current.String()
 }
 
-func (mfs mockFibSequence) GetNext(s *Server) uint32 {
-	return mfs.next
+func (mfs mockFibSequence) GetNext(s *Server) string {
+	return mfs.next.String()
 }
 
-func (mfs mockFibSequence) GetPrevious(s *Server) uint32 {
-	return mfs.previous
+func (mfs mockFibSequence) GetPrevious(s *Server) string {
+	return mfs.previous.String()
 }
 
 func TestServer_handleCurrent(t *testing.T) {
@@ -46,9 +47,9 @@ func TestServer_handleCurrent(t *testing.T) {
 			name: "happy path",
 			fields: fields{
 				mfs: mockFibSequence{
-					current:  5,
-					next:     8,
-					previous: 3,
+					current:  big.NewInt(5),
+					next:     big.NewInt(8),
+					previous: big.NewInt(3),
 				},
 			},
 			wants: wants{
@@ -112,9 +113,9 @@ func TestServer_handleNext(t *testing.T) {
 			name: "happy path",
 			fields: fields{
 				mfs: mockFibSequence{
-					current:  5,
-					next:     8,
-					previous: 3,
+					current:  big.NewInt(5),
+					next:     big.NewInt(8),
+					previous: big.NewInt(3),
 				},
 			},
 			wants: wants{
@@ -178,9 +179,9 @@ func TestServer_handlePrevious(t *testing.T) {
 			name: "happy path",
 			fields: fields{
 				mfs: mockFibSequence{
-					current:  5,
-					next:     8,
-					previous: 3,
+					current:  big.NewInt(5),
+					next:     big.NewInt(8),
+					previous: big.NewInt(3),
 				},
 			},
 			wants: wants{

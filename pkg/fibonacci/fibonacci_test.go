@@ -3,6 +3,7 @@ package fibonacci
 import (
 	"context"
 	"errors"
+	"math/big"
 	"reflect"
 	"sync"
 	"testing"
@@ -46,9 +47,9 @@ func Test_restoreFibonacci(t *testing.T) {
 				},
 			},
 			want: &Fibonacci{
-				current:  5,
-				next:     8,
-				previous: 3,
+				current:  big.NewInt(5),
+				next:     big.NewInt(8),
+				previous: big.NewInt(3),
 				rwMutex:  &sync.RWMutex{},
 			},
 			wantErr: false,
@@ -108,9 +109,9 @@ func TestInitializeFibonacci(t *testing.T) {
 				},
 			},
 			want: &Fibonacci{
-				current:  0,
-				next:     1,
-				previous: 0,
+				current:  big.NewInt(0),
+				next:     big.NewInt(1),
+				previous: big.NewInt(0),
 				rwMutex:  &sync.RWMutex{},
 			},
 		},
@@ -123,9 +124,9 @@ func TestInitializeFibonacci(t *testing.T) {
 				},
 			},
 			want: &Fibonacci{
-				current:  5,
-				next:     8,
-				previous: 3,
+				current:  big.NewInt(5),
+				next:     big.NewInt(8),
+				previous: big.NewInt(3),
 				rwMutex:  &sync.RWMutex{},
 			},
 		},
@@ -141,25 +142,25 @@ func TestInitializeFibonacci(t *testing.T) {
 
 func TestFibonacci_GetCurrent(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  *big.Int
+		next     *big.Int
+		previous *big.Int
 		rwMutex  *sync.RWMutex
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   uint32
+		want   *big.Int
 	}{
 		{
 			name: "happy path",
 			fields: fields{
-				current:  5,
-				next:     8,
-				previous: 3,
+				current:  big.NewInt(5),
+				next:     big.NewInt(8),
+				previous: big.NewInt(3),
 				rwMutex:  &sync.RWMutex{},
 			},
-			want: 5,
+			want: big.NewInt(5),
 		},
 	}
 	for _, tt := range tests {
@@ -170,7 +171,7 @@ func TestFibonacci_GetCurrent(t *testing.T) {
 				previous: tt.fields.previous,
 				rwMutex:  tt.fields.rwMutex,
 			}
-			if got := f.GetCurrent(); got != tt.want {
+			if got := f.GetCurrent(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Fibonacci.GetCurrent() = %v, want %v", got, tt.want)
 			}
 		})
@@ -179,9 +180,9 @@ func TestFibonacci_GetCurrent(t *testing.T) {
 
 func TestFibonacci_GetNext(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  *big.Int
+		next     *big.Int
+		previous *big.Int
 		rwMutex  *sync.RWMutex
 	}
 	type args struct {
@@ -191,14 +192,14 @@ func TestFibonacci_GetNext(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   uint32
+		want   *big.Int
 	}{
 		{
 			name: "happy path",
 			fields: fields{
-				current:  5,
-				next:     8,
-				previous: 3,
+				current:  big.NewInt(5),
+				next:     big.NewInt(8),
+				previous: big.NewInt(3),
 				rwMutex:  &sync.RWMutex{},
 			},
 			args: args{
@@ -207,7 +208,7 @@ func TestFibonacci_GetNext(t *testing.T) {
 					err:   nil,
 				},
 			},
-			want: 8,
+			want: big.NewInt(8),
 		},
 	}
 	for _, tt := range tests {
@@ -218,13 +219,13 @@ func TestFibonacci_GetNext(t *testing.T) {
 				previous: tt.fields.previous,
 				rwMutex:  tt.fields.rwMutex,
 			}
-			if got := f.GetNext(tt.args.rdb); got != tt.want {
+			if got := f.GetNext(tt.args.rdb); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Fibonacci.GetNext() = %v, want %v", got, tt.want)
 			}
 
 			updated := &Fibonacci{
 				current:  tt.fields.next,
-				next:     tt.fields.current + tt.fields.next,
+				next:     new(big.Int).Add(tt.fields.current, tt.fields.next),
 				previous: tt.fields.current,
 				rwMutex:  &sync.RWMutex{},
 			}
@@ -238,25 +239,25 @@ func TestFibonacci_GetNext(t *testing.T) {
 
 func TestFibonacci_GetPrevious(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  *big.Int
+		next     *big.Int
+		previous *big.Int
 		rwMutex  *sync.RWMutex
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   uint32
+		want   *big.Int
 	}{
 		{
 			name: "happy path",
 			fields: fields{
-				current:  5,
-				next:     8,
-				previous: 3,
+				current:  big.NewInt(5),
+				next:     big.NewInt(8),
+				previous: big.NewInt(3),
 				rwMutex:  &sync.RWMutex{},
 			},
-			want: 3,
+			want: big.NewInt(3),
 		},
 	}
 	for _, tt := range tests {
@@ -267,7 +268,7 @@ func TestFibonacci_GetPrevious(t *testing.T) {
 				previous: tt.fields.previous,
 				rwMutex:  tt.fields.rwMutex,
 			}
-			if got := f.GetPrevious(); got != tt.want {
+			if got := f.GetPrevious(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Fibonacci.GetPrevious() = %v, want %v", got, tt.want)
 			}
 		})
