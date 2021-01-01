@@ -6,42 +6,46 @@ import (
 	"net/http"
 )
 
-// This function should return the current number in the Fibonacci sequence
-func (s *Server) handle_current() http.HandlerFunc {
-	return recovery_wrapper(
+// handleCurrent -
+// This function should return the current number in the Fibonacci sequence.
+func (s *Server) handleCurrent() http.HandlerFunc {
+	return recoveryWrapper(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(fmt.Sprintf(`{"current": %d}`, s.f_sequence.Get_Current())))
+			w.Write([]byte(fmt.Sprintf(`{"current": %d}`, s.fibSequence.GetCurrent())))
 		},
 	)
 }
 
+// handleNext -
 // This function should return the next number in the Fibonacci sequence and
-// progress the series
-func (s *Server) handle_next() http.HandlerFunc {
-	return recovery_wrapper(
+// progress the series.
+func (s *Server) handleNext() http.HandlerFunc {
+	return recoveryWrapper(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(fmt.Sprintf(`{"next": %d}`, s.f_sequence.Get_Next(s.rdb))))
+			w.Write([]byte(fmt.Sprintf(`{"next": %d}`, s.fibSequence.GetNext(s.rdb))))
 		},
 	)
 }
 
-// This function returns the previous number in the Fibonacci sequence
-func (s *Server) handle_previous() http.HandlerFunc {
-	return recovery_wrapper(
+// handlePrevious -
+// This function returns the previous number in the Fibonacci sequence.
+func (s *Server) handlePrevious() http.HandlerFunc {
+	return recoveryWrapper(
 		func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte(fmt.Sprintf(`{"previous": %d}`, s.f_sequence.Get_Previous())))
+			w.Write([]byte(fmt.Sprintf(`{"previous": %d}`, s.fibSequence.GetPrevious())))
 		},
 	)
 }
 
-// This function is simply a health check endpoint
-func (s *Server) handle_health() http.HandlerFunc {
+// handleHealth -
+// This function is simply a health check endpoint.
+func (s *Server) handleHealth() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -50,7 +54,7 @@ func (s *Server) handle_health() http.HandlerFunc {
 }
 
 // This function is simply a wrapper to catch occuring panics and recover gracefully
-func recovery_wrapper(h http.HandlerFunc) http.HandlerFunc {
+func recoveryWrapper(h http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var err error
 

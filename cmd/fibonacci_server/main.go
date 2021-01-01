@@ -21,8 +21,8 @@ func main() {
 
 func run() error {
 	var err error = nil
-	s := server.Initialize_Server()
-	err = http.ListenAndServe("0.0.0.0:8080", s.Get_Router())
+	s := server.InitializeServer()
+	err = http.ListenAndServe("0.0.0.0:8080", s.GetRouter())
 
 	return err
 }

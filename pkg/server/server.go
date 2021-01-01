@@ -6,15 +6,17 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// Simple server wrapper onjects to contain all basic dependencies
+// Server -
+// Simple server wrapper onjects to contain all basic dependencies.
 type Server struct {
-	f_sequence *fibonacci.Fibonacci
-	router     *httprouter.Router
-	rdb        *redis.Client
+	fibSequence *fibonacci.Fibonacci
+	router      *httprouter.Router
+	rdb         *redis.Client
 }
 
-// Public function used to initialize an instance of Server
-func Initialize_Server() *Server {
+// InitializeServer -
+// Public function used to initialize an instance of Server.
+func InitializeServer() *Server {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "",
@@ -22,16 +24,17 @@ func Initialize_Server() *Server {
 	})
 
 	s := &Server{
-		f_sequence: fibonacci.Initialize_Fibonacci(rdb),
-		router:     httprouter.New(),
-		rdb:        rdb,
+		fibSequence: fibonacci.InitializeFibonacci(rdb),
+		router:      httprouter.New(),
+		rdb:         rdb,
 	}
 
 	s.routes()
 	return s
 }
 
-// Getter function for the router
-func (s *Server) Get_Router() *httprouter.Router {
+// GetRouter -
+// Getter function for the router.
+func (s *Server) GetRouter() *httprouter.Router {
 	return s.router
 }
