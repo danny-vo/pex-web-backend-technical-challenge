@@ -247,7 +247,7 @@ A bit of a more obvious solution, but using `redis` to store the current value i
 
 During application startup, the app attempts to retrieve the "current" value from `redis` while initializing its Fibonacci state. If an error is occurred, `redis` is not up, or the value is not yet set, the app starts from a fresh state. Elsewise the app retrieves the value stored in `redis` and constructs the `previous` and `next` values and uses that as its starting state.
 
-Note that a limitation exists in the case **BOTH** `app` and `redis` goes boom, there is no other option but to start from a fresh state. There is also the rare case where `redis` restarts and the app fails to write a value to the database will result in restarting in a fresh state. A potential solution to this would to have the `redis` service `curl` the `/current` endpoint on start and attempt to set the value itself.
+Note that a limitation exists in the case **BOTH** `app` and `redis` goes boom, there is no other option but to start from a fresh state. There is also the rare case where `redis` restarts and the app fails to write a value to the database before crashing, will result in restarting in a fresh state. A potential solution to this would to have the `redis` service `curl` the `/current` endpoint on start and attempt to set the value itself.
 
 Another challenge to handle was what if the "machine" i.e. container the app goes on is unhealthy, and not in the sense that the container is unhealthy. Some such scenarios could be the app gets stuck in a 3rd party library in an internal loop, or it simply got overloaded with requests to the point of non-responsiveness and failure.  
 
