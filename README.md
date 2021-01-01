@@ -49,28 +49,28 @@ Recorded performance of `/current`
 ```
 Running 30s test @ http://0.0.0.0:8080/current
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.079ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.066ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.068ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.083ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.08ms  518.19us  13.21ms   72.45%
-    Req/Sec   525.13    124.03     1.33k    48.96%
-  29922 requests in 30.00s, 3.73MB read
-Requests/sec:    997.36
-Transfer/sec:    127.34KB
+    Latency     1.09ms  735.03us  29.82ms   91.23%
+    Req/Sec   525.09    125.85     1.78k    73.12%
+  29922 requests in 30.00s, 4.01MB read
+Requests/sec:    997.39
+Transfer/sec:    136.75KB
 ```
 
 Recorded performance of `/next`
 ```
 Running 30s test @ http://0.0.0.0:8080/next
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.087ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.089ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.078ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.082ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.10ms  515.76us  13.61ms   72.93%
-    Req/Sec   525.52    119.71     1.20k    50.34%
-  29925 requests in 30.00s, 3.65MB read
-Requests/sec:    997.44
-Transfer/sec:    124.42KB
+    Latency     1.12ms  705.01us  27.70ms   89.99%
+    Req/Sec   525.22    123.82     1.33k    49.30%
+  29922 requests in 30.00s, 3.92MB read
+Requests/sec:    997.37
+Transfer/sec:    133.82KB
 ```
 
 
@@ -79,15 +79,19 @@ Recorded performance of `/previous`
 Running 30s test @ http://0.0.0.0:8080/previous
   2 threads and 100 connections
   Thread calibration: mean lat.: 1.056ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.078ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.084ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.08ms  513.92us  13.38ms   71.26%
-    Req/Sec   524.94    120.89     1.00k    50.40%
-  29924 requests in 30.00s, 3.76MB read
-Requests/sec:    997.42
-Transfer/sec:    128.32KB
+    Latency     1.09ms  724.56us  30.03ms   91.13%
+    Req/Sec   525.08    121.23     1.60k    50.42%
+  29924 requests in 30.00s, 4.03MB read
+Requests/sec:    997.31
+Transfer/sec:    137.71KB
 ```
 
 These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
 
 Since all 3 endpoints have an average latency of about ~1.1ms, I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
+
+**NOTE**: My code uses uint64 to store the Fibonacci numbers, but I did attempt a solution that used math/big.Int to contain the values.
+Peformance degraded by a magnitude of roughly 100x, which I did not consider a worthy tradeoff.
+However that build is available in the `big` branch, and handling extremely large numbers was taken into consideration.
