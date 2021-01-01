@@ -7,6 +7,9 @@ build:
 	mkdir -p $(OBJDIR)
 	go build -o $(OBJDIR) ./...
 
+test:
+	go test -v ./...
+
 run: build
 	$(OBJDIR)/$(BINARY)
 
