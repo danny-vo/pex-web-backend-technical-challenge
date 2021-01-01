@@ -25,7 +25,7 @@ Requirements:
 
 
 Testing Load Handling / High Throughput (TPS)
-=============================================
+---------------------------------------------
 
 ### Methodology
 The benchmarking tool I elected to use was [wrk2](https://github.com/giltene/wrk2) due to its ability to:
