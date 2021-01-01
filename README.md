@@ -90,4 +90,4 @@ Transfer/sec:    128.32KB
 
 These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
 
-Since all 3 endpoints have an average latency of about ~1.1ms I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
+Since all 3 endpoints have an average latency of about ~1.1ms, I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
