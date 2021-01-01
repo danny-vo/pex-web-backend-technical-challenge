@@ -6,8 +6,34 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type serverInitializer interface {
+	NewRedisClient(opt *redis.Options) *redis.Client
+	NewRouter() *httprouter.Router
+	InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci
+}
+
+type servInitializer struct{}
+
+func (servInit *servInitializer) NewRedisClient(opt *redis.Options) *redis.Client {
+	return redis.NewClient(opt)
+}
+
+func (servInit *servInitializer) InitializeFibonacci(rdb fibonacci.RedisClient) *fibonacci.Fibonacci {
+	return fibonacci.InitializeFibonacci(rdb)
+}
+
+func (servInit *servInitializer) NewRouter() *httprouter.Router {
+	return httprouter.New()
+}
+
+var servInit *servInitializer
+
+func init() {
+	servInit = &servInitializer{}
+}
+
 // Server -
-// Simple server wrapper onjects to contain all basic dependencies.
+// servInitmple server wrapper onjects to contain all baservInitc dependencies.
 type Server struct {
 	fibSequence *fibonacci.Fibonacci
 	router      *httprouter.Router
@@ -17,15 +43,15 @@ type Server struct {
 // InitializeServer -
 // Public function used to initialize an instance of Server.
 func InitializeServer() *Server {
-	rdb := redis.NewClient(&redis.Options{
+	rdb := servInit.NewRedisClient(&redis.Options{
 		Addr:     "redis:6379",
 		Password: "",
 		DB:       0,
 	})
 
 	s := &Server{
-		fibSequence: fibonacci.InitializeFibonacci(rdb),
-		router:      httprouter.New(),
+		fibSequence: servInit.InitializeFibonacci(rdb),
+		router:      servInit.NewRouter(),
 		rdb:         rdb,
 	}
 

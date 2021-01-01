@@ -11,7 +11,9 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type redisClient interface {
+// RedisClient -
+// Wrapper interface for redis client Get and Set
+type RedisClient interface {
 	Get(ctx context.Context, key string) *redis.StringCmd
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
 }
@@ -26,7 +28,7 @@ type Fibonacci struct {
 
 // This function attempts to restore a fibonacci sequence state as saved in redis
 // using the "current" value
-func restoreFibonacci(rdb redisClient) (*Fibonacci, error) {
+func restoreFibonacci(rdb RedisClient) (*Fibonacci, error) {
 	current, err := rdb.Get(context.Background(), "fibonacci_current").Result()
 	if nil != err {
 		log.Printf("Error attempting to restore sequence from redis: %v", err)
@@ -51,7 +53,7 @@ func restoreFibonacci(rdb redisClient) (*Fibonacci, error) {
 
 // InitializeFibonacci -
 // This function initializes the Fibonacci wrapper to the start of the sequence.
-func InitializeFibonacci(rdb redisClient) *Fibonacci {
+func InitializeFibonacci(rdb RedisClient) *Fibonacci {
 	if fib, err := restoreFibonacci(rdb); nil == err {
 		log.Printf("Successfully restoring sequence state from redis:\n\tcurrent: %v\n\tnext: %v\n\tprevious: %v\n\n", fib.current, fib.next, fib.previous)
 		return fib
@@ -80,7 +82,7 @@ func (f *Fibonacci) GetCurrent() uint32 {
 // This function will both retrieve the next value in the sequence and update
 // the previous and current values.
 // This function is locked from starting while any other R/W operations are occuring
-func (f *Fibonacci) GetNext(rdb redisClient) uint32 {
+func (f *Fibonacci) GetNext(rdb RedisClient) uint32 {
 	f.rwMutex.Lock()
 	defer f.rwMutex.Unlock()
 
