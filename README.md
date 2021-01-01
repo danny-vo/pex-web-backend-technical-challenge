@@ -155,41 +155,41 @@ Requests/sec:    997.31
 Transfer/sec:    137.71KB
 ```
 
-These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
+These 3 endpoints were bombarded simultaneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
 
-Since all 3 endpoints have an average latency of about ~1.1ms, I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
+Since all 3 endpoints have an average latency of about ~1.1ms, we can estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
 
 **NOTE**: My code uses uint64 to store the Fibonacci numbers, but I did attempt a solution that used math/big.Int to contain the values.
-Peformance degraded by a magnitude of roughly 100x, which I did not consider a worthy tradeoff.
+Performance degraded by a magnitude of roughly 100x, which I did not consider a worthy tradeoff.
 However that build is available in the `big` branch, and handling extremely large numbers was taken into consideration.
 
 
 Application Design
 ------------------
 ### Language / Framework
-Due to the performance requirements stated out of the application, I elected to use `Golang` as my language of choice due to native asynchronous ability and general speed/efficiency. This was important as there was also a restriction on the amount of resources my application had access to.  
+Due to the performance requirements stated out of the application, I elected to use `Golang` as the language of choice due to native asynchronous ability and general speed/efficiency. This was important as there was also a restriction on the amount of resources our application had access to.  
 
-The nature of this application's specifications also requires to be mindful of read/write concurrency issues with respect to the state of the Fibonacci values. `Go` helps by natively providing an extremely easy to use native `sync` library, more specifically `sync.RWMutex`.
+The nature of this application's specifications also requires us to be mindful of read/write concurrency issues with respect to the state of the Fibonacci values. `Go` helps by natively providing an extremely easy to use native `sync` library, more specifically `sync.RWMutex`.
 
-I utilized [httprouter](https://github.com/julienschmidt/httprouter) as my routing framework of choice, as it outperforms native `net/http` and other 3rd party libraries with extremely fast times. Additionally it is fairly lightweight and since the application itself is not large scale, there is no need to use something more cumbersome.  
+I utilized [httprouter](https://github.com/julienschmidt/httprouter) as the routing framework of choice, as it outperforms native `net/http` and other 3rd party libraries with extremely fast times. Additionally it is fairly lightweight and since the application itself is not large scale, there is no need to use something more cumbersome.  
 
 
 ### Technologies
-`Docker` immediately came to mind as a highly appropriate tool to use for containerizing my application. This ensures that regardless of where the execution takes place, the actual environment the application runs in is the same, mitigating any potential compatibility failures due to OS, Go version, and so forth.
+`Docker` immediately came to mind as a highly appropriate tool to use for containerizing the application. This ensures that regardless of where the execution takes place, the actual environment the application runs in is the same, mitigating any potential compatibility failures due to OS, Go version, and so forth.
 
-I also specify a multistage build in my `Dockerfile`, to keep the image itself small. Using `Alpine` as the OS serves to further compact memory complexity.  
+I also specify a multistage build in the `Dockerfile`, to keep the image itself small. Using `Alpine` as the OS serves to further compact memory complexity.  
 
-I decided upon using `docker-compose` as my orchestration tool to prop my services up and specify various constraints and policies. Since I did not have access to infrastructure (AWS, Azure, etc.) this would be a suitable way for me to develop, test, and deploy locally.
+I decided upon using `docker-compose` as the orchestration tool to prop our services up and specify various constraints and policies. Since I did not have access to infrastructure (AWS, Azure, etc.) this would be a suitable way for me to develop, test, and deploy locally.
 
-`docker-compose` also makes it easy to instantly start and stop all related services without having to type out multiple convoluted `docker run` arguments each time. Other noteworthy things to me using `compose` was the ability to easily limit my containers' resources to match the requirements of CPU and memory units. Additionally the restart policies would come in handy later.  
+`docker-compose` also makes it easy to instantly start and stop all related services without having to type out multiple convoluted `docker run` arguments each time. Other noteworthy things to me using `compose` was the ability to easily limit the containers' resources to match the requirements of CPU and memory units. Additionally the restart policies would come in handy later.  
 
-As a state caching solution I used `redis` alongside [go-redis](https://github.com/go-redis/redis) to interface with the database. I only needed to store a single value from my application to restore state so there was no need for something more complicated such as PostgreSQL or Cassandra.  
+As a state caching solution I used `redis` alongside [go-redis](https://github.com/go-redis/redis) to interface with the database. We only needed to store a single value from our application to restore state so there was no need for something more complicated such as PostgreSQL or Cassandra.  
 
 Additionally since `redis` stores using in memory, it is not limited by disk I/O which would assist with the theme of being as performant as possible
 
 
 ### Fault Tolerance and Recovery
-I attempted to provide maximum resiliency and recoverability from both software solutions (inside the main code) as well as from an "infratstructure" standpoint using my orchestration layer and `redis`.  
+I attempted to provide maximum resiliency and recoverability from both software solutions (inside the main code) as well as from an "infrastructure" standpoint using the orchestration layer and `redis`.  
 
 #### Software Solution
 At the very top level of the application, it is driven by a simple `http.ListenAndServe` which props up the routes and handlers to the outside world. This `ListenAndServe` function will run and "block" until an error occurs in which case it exits upon returning an error value.  
@@ -212,14 +212,14 @@ func main() {
 	log.Println("Starting server...")
 	for {
 		if err := run(); nil != err {
-			log.Printf("Error occured while serving: %v\n", err)
+			log.Printf("Error occurred while serving: %v\n", err)
 		}
 	}
 }
 ```
 By using this loop construct, we can get around the limitations of `main` only executing once, and ensures the application will attempt to restart again, with proper initialization and serving, ignoring fringe errors that may occur during the software solution.
 
-The next point of potential failures are my handler functions, which are mapped to the endpoint routes. To prevent a `panic` from killing the app off due to some uncaught fringe errors, I wrap the handler functions with the exclusion of `/health` with a `recoveryWrapper`
+The next point of potential failures are the handler functions, which are mapped to the endpoint routes. To prevent a `panic` from killing the app off due to some uncaught fringe errors, I wrap the handler functions with the exclusion of `/health` with a `recoveryWrapper`
 ```go
 func recoveryWrapper(h http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -227,7 +227,7 @@ func recoveryWrapper(h http.HandlerFunc) http.HandlerFunc {
 
 		defer func() {
 			if r := recover(); nil != r {
-				log.Printf("Error occured: %v\n, recovered", r)
+				log.Printf("Error occurred: %v\n, recovered", r)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
@@ -236,29 +236,29 @@ func recoveryWrapper(h http.HandlerFunc) http.HandlerFunc {
 	})
 }
 ```
-This wrapper function works around the limitations of `Go`'s `recover` function, which can only be executed with any real meaningful impact within defered functions. The `recover` function allows a panciked `Goroutine` to essentially regain control, and resume intended execution. The panic cause is propegated upwards however for logging. This middleware essentially acts an effective "catchall"  
+This wrapper function works around the limitations of `Go`'s `recover` function, which can only be executed with any real meaningful impact within defered functions. The `recover` function allows a panicked `Goroutine` to essentially regain control, and resume intended execution. The panic cause is propagated upwards however for logging. This middleware essentially acts an effective "catchall"  
 
-I decided not to capture `/health` with the middleware since if some issue happened with such basic functionality something is *probably* very wrong and a panic is more than acceptable. Additionally the `/health` endpoint is used as a litmus test for app healthiness with my `Docker` configurations.
+I decided not to capture `/health` with the middleware since if some issue happened with such basic functionality something is *probably* very wrong and a panic is more than acceptable. Additionally the `/health` endpoint is used as a litmus test for app healthiness with our `Docker` configurations.
 
 #### "Infrastructure" Solution
 Admittedly, it is difficult to ensure high tolerance and reliability with only containers and not a fully blown infrastructure / cloud service but there are still some tools and methodology that I found to be useful.  
 
-A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence my application is currently on. helps to manage and recover state. Whenever state is modified, namely through the execution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
+A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence the application is currently on. helps to manage and recover state. Whenever state is modified, namely through the execution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
 
-During application startup, the app attempts to retrieve the "current" value from `redis` while initializing its Fibonacci state. If an error is occurred, `redis` is not up, or the value is not yet set, the app starts from a fresh state. Elsewise the app retrieves the value stored in `redis` and constructs the `previous` and `next` values and uses that as its starting state.
+During application startup, the app attempts to retrieve the "current" value from `redis` while initializing its Fibonacci state. If an error occurred, `redis` is not up, or the value is not yet set, the app starts from a fresh state. Elsewise the app retrieves the value stored in `redis` and constructs the `previous` and `next` values and uses that as its starting state.
 
 Note that a limitation exists in the case **BOTH** `app` and `redis` goes boom, there is no other option but to start from a fresh state. There is also the rare case where `redis` restarts and the app fails to write a value to the database before crashing, will result in restarting in a fresh state. A potential solution to this would to have the `redis` service `curl` the `/current` endpoint on start and attempt to set the value itself.
 
 Another challenge to handle was what if the "machine" i.e. container the app goes on is unhealthy, and not in the sense that the container is unhealthy. Some such scenarios could be the app gets stuck in a 3rd party library in an internal loop, or it simply got overloaded with requests to the point of non-responsiveness and failure.  
 
-Normally if I had this service deployed to AWS on ECS, I could just note a failing health check and have ECS restart the service, feeding the new port to the ALB. However... we are just dealing with local containers. Fortunately, there is a [restart](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart) parameter that `docker-compose` provides. Alongside that there is also a very neat customizable [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v2/#healthcheck) parameter.
+Normally if we had this service deployed to AWS on ECS, we could just note a failing health check and have ECS restart the service, feeding the new port to the ALB. However... we are just dealing with local containers. Fortunately, there is a [restart](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart) parameter that `docker-compose` provides. Alongside that there is also a very neat customizable [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v2/#healthcheck) parameter.
 
 Rather unfortunately however, `restart` will only be triggered when the container itself is unhealthy (e.g. PID 1 is terminated) and there is no way of triggering it based off a simply failing healthcheck without using overly complicated scriptings and/or events.
 
-Luckily for us, the `healthcheck` parameter allows for custom command execution for healthchecking. To take advantage of this I assign the `test` subparameter with
+Luckily for us, the `healthcheck` parameter allows for custom command execution for healthchecking. To take advantage of this we can assign the `test` subparameter with
 ```bash
 curl -fail --retry 3 --max-time 5 --retry-delay 5 --retry-max-time 30 "http://0.0.0.0:8080/health" || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'
 ```
 To explain what this essentially does, it pings our `/health` endpoint with certain timeout and retry restrictions. If it ends up receiving a failing status code or times out without any response, it then pipes over to a `kill` command. The `kill` command attempts to first tell all processes to gracefully die then after a while terminates them forcibly. Since it is prefixed with `bash` rather than just `sh`, the `-1` PID means to target **ALL** running processes.  
 
-As mentioned before, containers will then be viewed as *unhealthy* by `docker-compose`, triggering our `restart: always` policy. There is a small caveat to this though - PID 1 is protected by default in `Docker`. To circumvent this safeguard from terminating our main process, we can use the [init](https://docs.docker.com/compose/compose-file/compose-file-v2/#init): `true` paramater. This ends up wrapping all of our processes using [tini](https://github.com/krallin/tini), circumventing the need to manually define a kill signal handler for our processes.
+As mentioned before, containers will then be viewed as *unhealthy* by `docker-compose`, triggering our `restart: always` policy. There is a small caveat to this though - PID 1 is protected by default in `Docker`. To circumvent this safeguard from terminating our main process, we can use the [init](https://docs.docker.com/compose/compose-file/compose-file-v2/#init): `true` parameter. This ends up wrapping all of our processes using [tini](https://github.com/krallin/tini), circumventing the need to manually define a kill signal handler for our processes.

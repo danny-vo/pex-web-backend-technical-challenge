@@ -11,7 +11,7 @@ func main() {
 	log.Println("Starting server...")
 	for {
 		if err := run(); nil != err {
-			log.Printf("Error occured while serving: %v\n", err)
+			log.Printf("Error occurred while serving: %v\n", err)
 		}
 	}
 }

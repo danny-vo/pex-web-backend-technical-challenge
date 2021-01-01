@@ -91,7 +91,7 @@ func recoveryWrapper(h http.HandlerFunc) http.HandlerFunc {
 
 		defer func() {
 			if r := recover(); nil != r {
-				log.Printf("Error occured: %v\n, recovered", r)
+				log.Printf("Error occurred: %v\n, recovered", r)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			}
 		}()
