@@ -33,7 +33,8 @@ The benchmarking tool I elected to use was [wrk2](https://github.com/giltene/wrk
 * Allow easy customizations of factors such as TPS, number of threads, connections open, and so forth
 * Extremely accurate latency measurements
 
-Using wrk2, I would attack the 3 endpoints specified in the requirements at once using 2 threads, 100 open connections, constant TPS of 1000 *EACH* for a duration of 30s.
+Using wrk2, I would attack all 3 endpoints specified in the requirements at once using 3 processes in parallel.
+Each process will use 2 threads, 100 open connections, and a constant TPS of 1000 for a duration of 30s.
 
 This this is the command I ended up running:
 
@@ -42,8 +43,6 @@ This this is the command I ended up running:
 ./wrk -t2 -c100 -d30s -R1000 http://0.0.0.0:8080/current > ~/current.log &
 ./wrk -t2 -c100 -d30s -R1000 http://0.0.0.0:8080/next > ~/next.log &
 ```
-
-Thus, this ended up being a test of a 3000 constant TPS load!
 
 ### Results
 Recorded performance of `/current`
@@ -77,18 +76,18 @@ Transfer/sec:    124.42KB
 
 Recorded performance of `/previous`
 ```
-Running 30s test @ http://0.0.0.0:8080/next
+Running 30s test @ http://0.0.0.0:8080/previous
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.087ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.089ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.056ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.078ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.10ms  515.76us  13.61ms   72.93%
-    Req/Sec   525.52    119.71     1.20k    50.34%
-  29925 requests in 30.00s, 3.65MB read
-Requests/sec:    997.44
-Transfer/sec:    124.42KB
+    Latency     1.08ms  513.92us  13.38ms   71.26%
+    Req/Sec   524.94    120.89     1.00k    50.40%
+  29924 requests in 30.00s, 3.76MB read
+Requests/sec:    997.42
+Transfer/sec:    128.32KB
 ```
 
-These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load of 3000 TPS over the duration of 30s.
+These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
 
 Since all 3 endpoints have an average latency of about ~1.1ms I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
