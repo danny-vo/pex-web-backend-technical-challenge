@@ -16,16 +16,16 @@ type mockFibSequence struct {
 	previous *big.Int
 }
 
-func (mfs mockFibSequence) GetCurrent(s *Server) string {
-	return mfs.current.String()
+func (mfs mockFibSequence) GetCurrent(s *Server) *big.Int {
+	return mfs.current
 }
 
-func (mfs mockFibSequence) GetNext(s *Server) string {
-	return mfs.next.String()
+func (mfs mockFibSequence) GetNext(s *Server) *big.Int {
+	return mfs.next
 }
 
-func (mfs mockFibSequence) GetPrevious(s *Server) string {
-	return mfs.previous.String()
+func (mfs mockFibSequence) GetPrevious(s *Server) *big.Int {
+	return mfs.previous
 }
 
 func TestServer_handleCurrent(t *testing.T) {

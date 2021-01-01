@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"log"
+	"math/big"
 	"net/http"
 )
 
@@ -10,9 +11,9 @@ import (
 // Simple wrapper interface for accessing Server's fibSequence to make
 // testing easier.
 type fibonacciSequence interface {
-	GetCurrent(s *Server) string
-	GetNext(s *Server) string
-	GetPrevious(s *Server) string
+	GetCurrent(s *Server) *big.Int
+	GetNext(s *Server) *big.Int
+	GetPrevious(s *Server) *big.Int
 }
 
 // fibonacciSeq -
@@ -21,20 +22,20 @@ type fibonacciSeq struct{}
 
 // GetCurrent -
 // This method retrieves the given Server's current fibonacci number
-func (fs fibonacciSeq) GetCurrent(s *Server) string {
-	return s.fibSequence.GetCurrent().String()
+func (fs fibonacciSeq) GetCurrent(s *Server) *big.Int {
+	return s.fibSequence.GetCurrent()
 }
 
 // GetNext -
 // This method retrieves the given Server's next fibonacci number
-func (fs fibonacciSeq) GetNext(s *Server) string {
-	return s.fibSequence.GetNext(s.rdb).String()
+func (fs fibonacciSeq) GetNext(s *Server) *big.Int {
+	return s.fibSequence.GetNext(s.rdb)
 }
 
 // GetPrevious -
 // This method retrieves the given Server's previous fibonacci number
-func (fs fibonacciSeq) GetPrevious(s *Server) string {
-	return s.fibSequence.GetPrevious().String()
+func (fs fibonacciSeq) GetPrevious(s *Server) *big.Int {
+	return s.fibSequence.GetPrevious()
 }
 
 var fibSeq fibonacciSequence
@@ -49,7 +50,7 @@ func (s *Server) handleCurrent() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(fmt.Sprintf(`{"current": %s}`, fibSeq.GetCurrent(s))))
+		w.Write([]byte(fmt.Sprintf(`{"current": %v}`, fibSeq.GetCurrent(s))))
 	}
 }
 
@@ -60,7 +61,7 @@ func (s *Server) handleNext() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(fmt.Sprintf(`{"next": %s}`, fibSeq.GetNext(s))))
+		w.Write([]byte(fmt.Sprintf(`{"next": %v}`, fibSeq.GetNext(s))))
 	}
 }
 
@@ -70,7 +71,7 @@ func (s *Server) handlePrevious() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(fmt.Sprintf(`{"previous": %s}`, fibSeq.GetPrevious(s))))
+		w.Write([]byte(fmt.Sprintf(`{"previous": %v}`, fibSeq.GetPrevious(s))))
 	}
 }
 
