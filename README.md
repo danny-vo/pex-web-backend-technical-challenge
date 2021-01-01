@@ -243,7 +243,7 @@ I decided not to capture `/health` with the middleware since if some issue happe
 #### "Infrastructure" Solution
 Admittedly, it is difficult to ensure high tolerance and reliability with only containers and not a fully blown infrastructure / cloud service but there are still some tools and methodology that I found to be useful.  
 
-A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence my application is currently on. helps to manage and recover state. Whenever state is modified, namely through the exexution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
+A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence my application is currently on. helps to manage and recover state. Whenever state is modified, namely through the execution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
 
 During application startup, the app attempts to retrieve the "current" value from `redis` while initializing its Fibonacci state. If an error is occurred, `redis` is not up, or the value is not yet set, the app starts from a fresh state. Elsewise the app retrieves the value stored in `redis` and constructs the `previous` and `next` values and uses that as its starting state.
 
