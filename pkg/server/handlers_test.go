@@ -10,20 +10,20 @@ import (
 )
 
 type mockFibSequence struct {
-	current  uint32
-	next     uint32
-	previous uint32
+	current  uint64
+	next     uint64
+	previous uint64
 }
 
-func (mfs mockFibSequence) GetCurrent(s *Server) uint32 {
+func (mfs mockFibSequence) GetCurrent(s *Server) uint64 {
 	return mfs.current
 }
 
-func (mfs mockFibSequence) GetNext(s *Server) uint32 {
+func (mfs mockFibSequence) GetNext(s *Server) uint64 {
 	return mfs.next
 }
 
-func (mfs mockFibSequence) GetPrevious(s *Server) uint32 {
+func (mfs mockFibSequence) GetPrevious(s *Server) uint64 {
 	return mfs.previous
 }
 

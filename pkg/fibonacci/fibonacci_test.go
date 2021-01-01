@@ -141,15 +141,15 @@ func TestInitializeFibonacci(t *testing.T) {
 
 func TestFibonacci_GetCurrent(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  uint64
+		next     uint64
+		previous uint64
 		rwMutex  *sync.RWMutex
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   uint32
+		want   uint64
 	}{
 		{
 			name: "happy path",
@@ -179,9 +179,9 @@ func TestFibonacci_GetCurrent(t *testing.T) {
 
 func TestFibonacci_GetNext(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  uint64
+		next     uint64
+		previous uint64
 		rwMutex  *sync.RWMutex
 	}
 	type args struct {
@@ -191,7 +191,7 @@ func TestFibonacci_GetNext(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   uint32
+		want   uint64
 	}{
 		{
 			name: "happy path",
@@ -238,15 +238,15 @@ func TestFibonacci_GetNext(t *testing.T) {
 
 func TestFibonacci_GetPrevious(t *testing.T) {
 	type fields struct {
-		current  uint32
-		next     uint32
-		previous uint32
+		current  uint64
+		next     uint64
+		previous uint64
 		rwMutex  *sync.RWMutex
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   uint32
+		want   uint64
 	}{
 		{
 			name: "happy path",

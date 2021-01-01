@@ -20,9 +20,9 @@ type RedisClient interface {
 
 // Fibonacci - Simple wrapper for the state of a Fibonacci sequence
 type Fibonacci struct {
-	current  uint32
-	next     uint32
-	previous uint32
+	current  uint64
+	next     uint64
+	previous uint64
 	rwMutex  *sync.RWMutex
 }
 
@@ -41,11 +41,11 @@ func restoreFibonacci(rdb RedisClient) (*Fibonacci, error) {
 	}
 
 	prev := float64(currentUint) / ((1 + math.Sqrt(5)) / 2.0)
-	roundedPrev := uint32(math.Round(prev))
+	roundedPrev := uint64(math.Round(prev))
 
 	return &Fibonacci{
-		current:  uint32(currentUint),
-		next:     uint32(currentUint) + roundedPrev,
+		current:  uint64(currentUint),
+		next:     uint64(currentUint) + roundedPrev,
 		previous: roundedPrev,
 		rwMutex:  &sync.RWMutex{},
 	}, nil
@@ -71,7 +71,7 @@ func InitializeFibonacci(rdb RedisClient) *Fibonacci {
 // GetCurrent -
 // This function will retrieve the value the sequence is currently on.
 // It will also set a reading lock.
-func (f *Fibonacci) GetCurrent() uint32 {
+func (f *Fibonacci) GetCurrent() uint64 {
 	f.rwMutex.RLock()
 	defer f.rwMutex.RUnlock()
 
@@ -82,7 +82,7 @@ func (f *Fibonacci) GetCurrent() uint32 {
 // This function will both retrieve the next value in the sequence and update
 // the previous and current values.
 // This function is locked from starting while any other R/W operations are occuring
-func (f *Fibonacci) GetNext(rdb RedisClient) uint32 {
+func (f *Fibonacci) GetNext(rdb RedisClient) uint64 {
 	f.rwMutex.Lock()
 	defer f.rwMutex.Unlock()
 
@@ -111,7 +111,7 @@ func (f *Fibonacci) GetNext(rdb RedisClient) uint32 {
 // GetPrevious -
 // This function will retrieve the previous value in the sequence
 // It will also set a reading lock
-func (f *Fibonacci) GetPrevious() uint32 {
+func (f *Fibonacci) GetPrevious() uint64 {
 	f.rwMutex.RLock()
 	defer f.rwMutex.RUnlock()
 

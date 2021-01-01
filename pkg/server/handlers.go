@@ -10,9 +10,9 @@ import (
 // Simple wrapper interface for accessing Server's fibSequence to make
 // testing easier.
 type fibonacciSequence interface {
-	GetCurrent(s *Server) uint32
-	GetNext(s *Server) uint32
-	GetPrevious(s *Server) uint32
+	GetCurrent(s *Server) uint64
+	GetNext(s *Server) uint64
+	GetPrevious(s *Server) uint64
 }
 
 // fibonacciSeq -
@@ -21,19 +21,19 @@ type fibonacciSeq struct{}
 
 // GetCurrent -
 // This method retrieves the given Server's current fibonacci number
-func (fs fibonacciSeq) GetCurrent(s *Server) uint32 {
+func (fs fibonacciSeq) GetCurrent(s *Server) uint64 {
 	return s.fibSequence.GetCurrent()
 }
 
 // GetNext -
 // This method retrieves the given Server's next fibonacci number
-func (fs fibonacciSeq) GetNext(s *Server) uint32 {
+func (fs fibonacciSeq) GetNext(s *Server) uint64 {
 	return s.fibSequence.GetNext(s.rdb)
 }
 
 // GetPrevious -
 // This method retrieves the given Server's previous fibonacci number
-func (fs fibonacciSeq) GetPrevious(s *Server) uint32 {
+func (fs fibonacciSeq) GetPrevious(s *Server) uint64 {
 	return s.fibSequence.GetPrevious()
 }
 
