@@ -50,45 +50,45 @@ Recorded performance of `/current`
 ```
 Running 30s test @ http://0.0.0.0:8080/current
   2 threads and 100 connections
-  Thread calibration: mean lat.: 2.090ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 2.142ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.079ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.066ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     2.12ms    1.00ms   9.20ms   71.72%
-    Req/Sec   523.88      1.44k    5.55k    88.75%
-  29002 requests in 30.00s, 3.62MB read
-Requests/sec:    966.70
-Transfer/sec:    123.40KB
+    Latency     1.08ms  518.19us  13.21ms   72.45%
+    Req/Sec   525.13    124.03     1.33k    48.96%
+  29922 requests in 30.00s, 3.73MB read
+Requests/sec:    997.36
+Transfer/sec:    127.34KB
 ```
 
 Recorded performance of `/next`
 ```
 Running 30s test @ http://0.0.0.0:8080/next
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.184ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.190ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.087ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.089ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.14ms  571.78us   7.48ms   74.49%
-    Req/Sec   525.25    125.93     1.00k    72.73%
-  29922 requests in 30.01s, 3.65MB read
-Requests/sec:    997.12
-Transfer/sec:    124.39KB
+    Latency     1.10ms  515.76us  13.61ms   72.93%
+    Req/Sec   525.52    119.71     1.20k    50.34%
+  29925 requests in 30.00s, 3.65MB read
+Requests/sec:    997.44
+Transfer/sec:    124.42KB
 ```
 
 
 Recorded performance of `/previous`
 ```
-Running 30s test @ http://0.0.0.0:8080/previous
+Running 30s test @ http://0.0.0.0:8080/next
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.117ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.167ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.087ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.089ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.11ms  558.46us   8.84ms   72.48%
-    Req/Sec   524.18    123.24     1.00k    75.75%
-  29922 requests in 30.00s, 3.76MB read
-Requests/sec:    997.36
-Transfer/sec:    128.31KB
+    Latency     1.10ms  515.76us  13.61ms   72.93%
+    Req/Sec   525.52    119.71     1.20k    50.34%
+  29925 requests in 30.00s, 3.65MB read
+Requests/sec:    997.44
+Transfer/sec:    124.42KB
 ```
 
-As a reminder, these 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load of 3000 TPS over the duration of 30s.
+These 3 endpoints were bombarded simulataneously each with a TPS load of 1000, coming together for a combined load of 3000 TPS over the duration of 30s.
 
-Both `/previous` and `/next` had a reported average of ~1.1ms of latency with `/current` averaging ~2.1ms of latency - I humbly consider this within acceptable parameters given the requirements asked only for 1/3 of the TPS load.
+Since all 3 endpoints have an average latency of about ~1.1ms I estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
