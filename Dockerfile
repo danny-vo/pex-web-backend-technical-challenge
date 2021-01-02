@@ -20,7 +20,7 @@ RUN go mod download
 COPY . .
 
 # Unit tests
-RUN CGO_ENABLED=1 go test -race ./...
+RUN make test
 
 # Build executable
 RUN make build
