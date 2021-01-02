@@ -11,6 +11,10 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
+const (
+	redisFibonacciKey = "fibonacci_current"
+)
+
 // RedisClient -
 // Wrapper interface for redis client Get and Set
 type RedisClient interface {
@@ -29,7 +33,7 @@ type Fibonacci struct {
 // This function attempts to restore a fibonacci sequence state as saved in redis
 // using the "current" value
 func restoreFibonacci(rdb RedisClient) (*Fibonacci, error) {
-	current, err := rdb.Get(context.Background(), "fibonacci_current").Result()
+	current, err := rdb.Get(context.Background(), redisFibonacciKey).Result()
 	if nil != err {
 		log.Printf("Error attempting to restore sequence from redis: %v", err)
 		return nil, err
@@ -92,18 +96,18 @@ func (f *Fibonacci) GetNext(rdb RedisClient) uint64 {
 	f.next = f.current + f.previous
 
 	// Store in cache to restore from in case container goes boom
-	go func() {
+	go func(previous, current, next uint64) {
 		log.Printf(
 			"Updating redis with state:\n\tprevious: %v\n\tcurrent: %v\n\tnext: %v\n\n",
-			f.previous, f.current, f.next,
+			previous, current, next,
 		)
 
 		if err := rdb.Set(
-			context.Background(), "fibonacci_current", f.current, 0,
+			context.Background(), redisFibonacciKey, current, 0,
 		).Err(); nil != err {
 			log.Printf("Error updating redis state: %v", err)
 		}
-	}()
+	}(f.previous, f.current, f.next)
 
 	return oldNext
 }
