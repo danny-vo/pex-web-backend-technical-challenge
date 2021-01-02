@@ -136,28 +136,28 @@ Recorded performance of `/current`
 ```
 Running 30s test @ http://0.0.0.0:8080/current
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.068ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.083ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.323ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.317ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.09ms  735.03us  29.82ms   91.23%
-    Req/Sec   525.09    125.85     1.78k    73.12%
-  29922 requests in 30.00s, 4.01MB read
-Requests/sec:    997.39
-Transfer/sec:    136.75KB
+    Latency     1.10ms  497.46us   7.84ms   70.04%
+    Req/Sec   525.32    123.56     1.00k    49.36%
+  29925 requests in 30.00s, 4.00MB read
+Requests/sec:    997.45
+Transfer/sec:    136.69KB
 ```
 
 Recorded performance of `/next`
 ```
 Running 30s test @ http://0.0.0.0:8080/next
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.078ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.082ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.337ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 2.075ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.12ms  705.01us  27.70ms   89.99%
-    Req/Sec   525.22    123.82     1.33k    49.30%
-  29922 requests in 30.00s, 3.92MB read
-Requests/sec:    997.37
-Transfer/sec:    133.82KB
+    Latency     1.58ms    0.89ms   7.41ms   72.91%
+    Req/Sec   524.25      1.04k    5.55k    94.31%
+  29462 requests in 30.00s, 3.86MB read
+Requests/sec:    982.03
+Transfer/sec:    131.74KB
 ```
 
 
@@ -165,19 +165,19 @@ Recorded performance of `/previous`
 ```
 Running 30s test @ http://0.0.0.0:8080/previous
   2 threads and 100 connections
-  Thread calibration: mean lat.: 1.056ms, rate sampling interval: 10ms
-  Thread calibration: mean lat.: 1.084ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.301ms, rate sampling interval: 10ms
+  Thread calibration: mean lat.: 1.294ms, rate sampling interval: 10ms
   Thread Stats   Avg      Stdev     Max   +/- Stdev
-    Latency     1.09ms  724.56us  30.03ms   91.13%
-    Req/Sec   525.08    121.23     1.60k    50.42%
+    Latency     1.09ms  500.79us   7.19ms   69.92%
+    Req/Sec   524.86    125.49     1.00k    72.16%
   29924 requests in 30.00s, 4.03MB read
-Requests/sec:    997.31
-Transfer/sec:    137.71KB
+Requests/sec:    997.42
+Transfer/sec:    137.67KB
 ```
 
 These 3 endpoints were bombarded simultaneously each with a TPS load of 1000, coming together for a combined load test of 3000 TPS over the duration of 30s against the app itself.
 
-Since all 3 endpoints have an average latency of about ~1.1ms, we can estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load.
+Since the read only endpoints have an average latency of about ~1.1ms, and the read/write endpoint at ~1.58ms latency - we can estimate that performance is acceptable given the requirements asked only for 1/3 of the TPS load actually tested.
 
 **NOTE**: My code uses uint64 to store the Fibonacci numbers, but I did attempt a solution that used math/big.Int to contain the values.
 Performance degraded by a magnitude of roughly 100x, which I did not consider a worthy tradeoff.
@@ -189,7 +189,7 @@ Application Design
 ### Language / Framework
 Due to the performance requirements stated out of the application, I elected to use `Golang` as the language of choice due to native asynchronous ability and general speed/efficiency. This was important as there was also a restriction on the amount of resources our application had access to.  
 
-The nature of this application's specifications also requires us to be mindful of read/write concurrency issues with respect to the state of the Fibonacci values. `Go` helps by natively providing an extremely easy to use native `sync` library, more specifically `sync.RWMutex`.
+The nature of this application's specifications also requires us to be mindful of read/write concurrency issues with respect to the state of the Fibonacci values. `Go` helps by natively providing an extremely easy to use native `sync` library, more specifically `sync.RWMutex`. Having the `-race` argument available to both test and compile binaries that reported race conditions is also crucial in avoiding any programming concurrency mishaps.
 
 I utilized [httprouter](https://github.com/julienschmidt/httprouter) as the routing framework of choice, as it outperforms native `net/http` and other 3rd party libraries with extremely fast times. Additionally it is fairly lightweight and since the application itself is not large scale, there is no need to use something more cumbersome.  
 
@@ -271,7 +271,7 @@ Note that a limitation exists in the case **BOTH** `app` and `redis` goes boom, 
 
 Another challenge to handle was what if the "machine" (i.e. container the app is on) goes unhealthy, and not in the sense that the container itself is unhealthy. Some such scenarios could be the app gets stuck in a 3rd party library in an internal loop, or it simply got overloaded with requests to the point of non-responsiveness and failure.  
 
-Normally if we had this service deployed to AWS on ECS, we could just note a failing health check and have ECS restart the service, feeding the new port to the ALB. However... we are just dealing with local containers. Fortunately, there is a [restart](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart) parameter that `docker-compose` provides. Alongside that there is also a very neat customizable [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v2/#healthcheck) parameter.
+Normally if we had this service deployed to AWS on ECS, we could just note a failing health check and have ECS restart the service, feeding the new host/port to the ALB. However... we are just dealing with local containers. Fortunately, there is a [restart](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart) parameter that `docker-compose` provides. Alongside that there is also a very neat customizable [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v2/#healthcheck) parameter.
 
 Rather unfortunately however, `restart` will only be triggered when the container itself is unhealthy (e.g. PID 1 is terminated) and there is no way of triggering it based off a simply failing healthcheck without using overly complicated scriptings and/or events.
 
