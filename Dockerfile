@@ -3,6 +3,8 @@ FROM golang:1.15-alpine AS build_base
 # Don't cache index locally
 RUN apk add --no-cache git
 RUN apk add --no-cache make
+RUN apk add --no-cache gcc
+RUN apk add --no-cache musl-dev
 
 # Set working directory
 WORKDIR /tmp/fibonacci-backend

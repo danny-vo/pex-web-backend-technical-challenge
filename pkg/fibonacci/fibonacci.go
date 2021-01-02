@@ -93,10 +93,10 @@ func (f *Fibonacci) GetNext(rdb RedisClient) uint64 {
 
 	// Store in cache to restore from in case container goes boom
 	go func() {
-		log.Printf(
-			"Updating redis with state:\n\tprevious: %v\n\tcurrent: %v\n\tnext: %v\n\n",
-			f.previous, f.current, f.next,
-		)
+		// log.Printf(
+		// 	"Updating redis with state:\n\tprevious: %v\n\tcurrent: %v\n\tnext: %v\n\n",
+		// 	f.previous, f.current, f.next,
+		// )
 
 		if err := rdb.Set(
 			context.Background(), "fibonacci_current", f.current, 0,
