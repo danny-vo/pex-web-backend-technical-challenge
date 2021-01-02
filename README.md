@@ -62,6 +62,7 @@ Unit test execution is also available via
 ```bash
 make test
 ```
+Note that this does require `gcc` and `stdlib` to be installed if running locally due to using `go test` with the `-race` argument.
 
 ### Endpoints
 There are four endpoints served by the application, at the root address and port: `http://0.0.0.0:8080`  
