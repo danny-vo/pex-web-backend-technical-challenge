@@ -1,6 +1,8 @@
 package server
 
 import (
+	"os"
+
 	"github.com/danny-vo/fibonacci-backend/pkg/fibonacci"
 	"github.com/go-redis/redis/v8"
 	"github.com/julienschmidt/httprouter"
@@ -54,8 +56,13 @@ type Server struct {
 // InitializeServer -
 // Public function used to initialize an instance of Server.
 func InitializeServer() *Server {
+	hostPort := os.Getenv("REDIS_HOST_PORT")
+	if 0 == len(hostPort) {
+		hostPort = "redis:6379"
+	}
+
 	rdb := servInit.NewRedisClient(&redis.Options{
-		Addr:     "redis:6379",
+		Addr:     hostPort,
 		Password: "",
 		DB:       0,
 	})
