@@ -205,7 +205,7 @@ I decided upon using `docker-compose` as the orchestration tool to prop our serv
 
 As a state caching solution I used `redis` alongside [go-redis](https://github.com/go-redis/redis) to interface with the database. We only needed to store a single value from our application to restore state so there was no need for something more complicated such as PostgreSQL or Cassandra.  
 
-Additionally since `redis` stores using in memory, it is not limited by disk I/O which would assist with the theme of being as performant as possible
+Additionally since `redis` stores using in memory, it is not limited by disk I/O which would assist with the theme of being as performant as possible.
 
 
 ### Fault Tolerance and Recovery
@@ -214,7 +214,7 @@ I attempted to provide maximum resiliency and recoverability from both software 
 #### Software Solution
 At the very top level of the application, it is driven by a simple `http.ListenAndServe` which props up the routes and handlers to the outside world. This `ListenAndServe` function will run and "block" until an error occurs in which case it exits upon returning an error value.  
 
-To mitigate the eternal disruption and shutdown of the application within the code base itself, I thus wrapped the aforementioned function and any server initializations within a `run` function.
+To mitigate the permanent disruption and shutdown of the application within the code base itself, I thus wrapped the aforementioned function and any server initializations within a `run` function.
 ```go
 func run() error {
 	var err error = nil
@@ -263,13 +263,13 @@ I decided not to capture `/health` with the middleware since if some issue happe
 #### "Infrastructure" Solution
 Admittedly, it is difficult to ensure high tolerance and reliability with only containers and not a fully blown infrastructure / cloud service but there are still some tools and methodology that I found to be useful.  
 
-A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence the application is currently on. helps to manage and recover state. Whenever state is modified, namely through the execution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
+A bit of a more obvious solution, but using `redis` to store the current value in the Fibonacci sequence the application is currently on helps to manage and recover state. Whenever state is modified, namely through the execution of the `/next` endpoint, the app fires off a `Goroutine` to set the value in `redis`.  
 
 During application startup, the app attempts to retrieve the "current" value from `redis` while initializing its Fibonacci state. If an error occurred, `redis` is not up, or the value is not yet set, the app starts from a fresh state. Elsewise the app retrieves the value stored in `redis` and constructs the `previous` and `next` values and uses that as its starting state.
 
 Note that a limitation exists in the case **BOTH** `app` and `redis` goes boom, there is no other option but to start from a fresh state. There is also the rare case where `redis` restarts and the app fails to write a value to the database before crashing, will result in restarting in a fresh state. A potential solution to this would to have the `redis` service `curl` the `/current` endpoint on start and attempt to set the value itself.
 
-Another challenge to handle was what if the "machine" i.e. container the app goes on is unhealthy, and not in the sense that the container is unhealthy. Some such scenarios could be the app gets stuck in a 3rd party library in an internal loop, or it simply got overloaded with requests to the point of non-responsiveness and failure.  
+Another challenge to handle was what if the "machine" (i.e. container the app is on) goes unhealthy, and not in the sense that the container itself is unhealthy. Some such scenarios could be the app gets stuck in a 3rd party library in an internal loop, or it simply got overloaded with requests to the point of non-responsiveness and failure.  
 
 Normally if we had this service deployed to AWS on ECS, we could just note a failing health check and have ECS restart the service, feeding the new port to the ALB. However... we are just dealing with local containers. Fortunately, there is a [restart](https://docs.docker.com/compose/compose-file/compose-file-v2/#restart) parameter that `docker-compose` provides. Alongside that there is also a very neat customizable [healthcheck](https://docs.docker.com/compose/compose-file/compose-file-v2/#healthcheck) parameter.
 
