@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/danny-vo/fibonacci-backend/pkg/server"
+	"github.com/dvo-dev/fibonacci-backend/pkg/server"
 )
 
 func main() {

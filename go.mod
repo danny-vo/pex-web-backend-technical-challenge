@@ -1,4 +1,4 @@
-module github.com/danny-vo/fibonacci-backend
+module github.com/dvo-dev/fibonacci-backend
 
 go 1.15
 

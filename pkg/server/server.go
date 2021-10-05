@@ -3,7 +3,7 @@ package server
 import (
 	"os"
 
-	"github.com/danny-vo/fibonacci-backend/pkg/fibonacci"
+	"github.com/dvo-dev/fibonacci-backend/pkg/fibonacci"
 	"github.com/go-redis/redis/v8"
 	"github.com/julienschmidt/httprouter"
 )
